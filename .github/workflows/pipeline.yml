@@ -59,8 +59,8 @@ jobs:
       with:
         context: .
         file: ./Dockerfile
-        push: false # 🟢 Đổi thành false để giữ lại máy ảo quét lỗi trước
-        load: true  # 🟢 Nạp Image vừa build vào Docker daemon của máy ảo
+        push: false
+        load: true
         tags: devops-project-02:test
 
     # BƯỚC 2: TIẾN HÀNH QUÉT BẢO MẬT BẰNG TRIVY (MIỄN PHÍ)
