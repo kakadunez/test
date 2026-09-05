@@ -53,15 +53,36 @@ jobs:
           echo "RUN echo '<h1>Welcome to DevOps Project 02 via GHCR</h1>' > /usr/share/nginx/html/index.html" >> Dockerfile
         fi
 
-    # Build và Đẩy Image lên GitHub Packages
-    - name: Build and Push Docker Image
+	# BƯỚC 1: Chỉ BUILD ứng dụng và lưu vào bộ nhớ máy ảo (Chưa PUSH lên cloud)
+    - name: Build Docker Image Locally
       uses: docker/build-push-action@v5
       with:
         context: .
         file: ./Dockerfile
-        push: true
-        # Định dạng tên ảnh trên GitHub: ghcr.io/ten-tai-khoan/ten-repo:tag
+        push: false # 🟢 Đổi thành false để giữ lại máy ảo quét lỗi trước
+        load: true  # 🟢 Nạp Image vừa build vào Docker daemon của máy ảo
+        tags: devops-project-02:test
+
+    # BƯỚC 2: TIẾN HÀNH QUÉT BẢO MẬT BẰNG TRIVY (MIỄN PHÍ)
+    - name: Run Trivy Vulnerability Scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'devops-project-02:test' # Trỏ vào Image vừa build ở trên
+        format: 'table'                    # Xuất kết quả dạng bảng dễ nhìn
+        exit-code: '0'                      # 💡 Giải thích: '0' là chỉ cảnh báo và cho chạy tiếp. 
+                                            # Đổi thành '1' nếu bạn muốn PIPELINE BỊ SẬP (CRASH) 
+                                            # nếu phát hiện lỗ hổng nghiêm trọng (CRITICAL).
+        ignore-unfixed: true               # Bỏ qua các lỗi chưa có bản vá từ nhà phát triển
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'          # Chỉ tập trung quét các lỗi Nghiêm trọng và Cao
+
+    # BƯỚC 3: Nếu quét an toàn (hoặc chỉ cảnh báo), tiến hành PUSH lên GitHub Packages
+    - name: Push Docker Image to GHCR
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true # 🟢 Bây giờ mới đẩy lên cloud
         tags: |
           ghcr.io/${{ github.repository_owner }}/devops-project-02:latest
           ghcr.io/${{ github.repository_owner }}/devops-project-02:${{ github.run_number }}
-
