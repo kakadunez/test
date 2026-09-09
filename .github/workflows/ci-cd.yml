@@ -1,0 +1,55 @@
+name: Java CI-CD Pipeline with SonarCloud
+
+# Pipeline này sẽ tự động kích hoạt mỗi khi bạn code xong và "git push" lên nhánh master (hoặc main)
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  build-and-test:
+    # GitHub sẽ cấp cho bạn một máy ảo Ubuntu miễn phí trên Cloud để chạy các lệnh bên dưới
+    runs-on: ubuntu-latest
+
+    steps:
+    # Bước 1: Kéo mã nguồn của bạn từ GitHub vào máy ảo này
+    - name: Checkout source code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Cần thiết đối với SonarCloud để nó phân tích được lịch sử commit
+
+    # Bước 2: Cài đặt môi trường Java (JDK 17) trên máy ảo để chuẩn bị build code
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven # Tự động cache lại các thư viện Maven để lần sau chạy nhanh hơn
+
+    # Bước 3: Kích hoạt bộ nhớ đệm (Cache) riêng cho SonarCloud để tăng tốc độ quét code
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    # Bước 4: Chạy lệnh build ứng dụng Java (bằng Maven) ĐỒNG THỜI quét chất lượng code đẩy lên SonarCloud
+    # Lưu ý: Thay thế "THAY_ORGANIZATION_CỦA_BẠN" và "THAY_PROJECT_KEY_CỦA_BẠN" bằng thông tin SonarCloud cấp cho bạn
+    - name: Build project and Analyze with SonarCloud
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token mặc định do GitHub tự sinh ra
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # Token bảo mật bạn đã cấu hình ở Bước 2
+      run: |
+        mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          -Dsonar.organization=THAY_ORGANIZATION_CỦA_BẠN \
+          -Dsonar.projectKey=THAY_PROJECT_KEY_CỦA_BẠN
+
+    # Bước 5: Đóng gói sản phẩm (Artifact) thành tệp tin .war hoặc .jar và lưu trữ lại trên GitHub
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Java-Application-Package
+        path: target/*.war  # Hoặc target/*.jar tùy thuộc vào cấu hình file pom.xml của bạn
+
