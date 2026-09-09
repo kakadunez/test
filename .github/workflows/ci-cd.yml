@@ -44,7 +44,7 @@ jobs:
       run: |
         mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.organization=kakadunez \
-          -Dsonar.projectKey=kakadunez
+          -Dsonar.projectKey=kakadunez_test
 
     # Bước 5: Đóng gói sản phẩm (Artifact) thành tệp tin .war hoặc .jar và lưu trữ lại trên GitHub
     - name: Upload Build Artifact
