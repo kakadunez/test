@@ -25,6 +25,17 @@
 
     <build>
         <finalName>devops-16-app</finalName>
+        <plugins>
+            <!-- Thêm đoạn cấu hình plugin này vào để sửa lỗi web.xml -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>
 
