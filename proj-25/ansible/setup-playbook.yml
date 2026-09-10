@@ -5,4 +5,3 @@
       ansible.builtin.apt:
         name: nginx
         state: present
-
