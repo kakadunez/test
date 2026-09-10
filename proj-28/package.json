@@ -1,0 +1,11 @@
+{
+  "name": "proj-28-automated-testing",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
+
