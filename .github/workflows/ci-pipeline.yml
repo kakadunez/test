@@ -1,0 +1,26 @@
+name: DevOps Project Local CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest  # Chạy miễn phí trên máy ảo của GitHub
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    - name: Kiểm tra bảo mật mã nguồn (Trivy Scan)
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        format: 'table'
+
+    - name: Khởi tạo Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Tiến hành Build thử nghiệm Docker Image
+      run: |
+        docker build -t my-local-app:latest ./app
+
