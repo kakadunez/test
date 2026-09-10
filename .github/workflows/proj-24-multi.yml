@@ -1,8 +1,11 @@
-name: DevOps Project Local CI
+name: DevOps Project 24 Local CI
 
 on:
   push:
     branches: [ "main", "master" ]
+    # Mẹo tối ưu: Chỉ chạy pipeline này khi có thay đổi thực sự trong thư mục proj-24
+    paths:
+      - 'proj-24/**'
 
 jobs:
   continuous-integration:
@@ -11,11 +14,14 @@ jobs:
     - name: Checkout mã nguồn
       uses: actions/checkout@v4
 
+    # ĐÃ SỬA: Đổi sang version ổn định và cấu hình quét chính xác thư mục con proj-24
     - name: Kiểm tra bảo mật mã nguồn (Trivy Scan)
-      uses: aquasecurity/trivy-action@master
+      uses: aquasecurity/trivy-action@v0.28.0
       with:
         scan-type: 'fs'
+        scan-ref: './proj-24' # CHỈ quét lỗi bảo mật bên trong thư mục bài lab 24
         format: 'table'
+        exit-code: '0'        # Giúp pipeline vẫn tiếp tục chạy kể cả khi phát hiện lỗ hổng bảo mật (để bạn học tập)
 
     - name: Khởi tạo Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -27,3 +33,4 @@ jobs:
         file: ./proj-24/app/Dockerfile
         push: false
         tags: my-local-app:latest
+

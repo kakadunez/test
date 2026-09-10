@@ -3,6 +3,9 @@ name: DevOps Project 25 - Configuration & Artifact Automation
 on:
   push:
     branches: [ "main", "master" ]
+    # Mẹo tối ưu từ bài trước: Chỉ chạy khi có thay đổi trong thư mục proj-25
+    paths:
+      - 'proj-25/**'
 
 jobs:
   automation-pipeline:
@@ -15,11 +18,11 @@ jobs:
     - name: Checkout mã nguồn
       uses: actions/checkout@v4
 
-    # Bước A: Quét lỗi cú pháp file Ansible trong thư mục con proj-25/ansible
+    # Bước A: SỬA LỖI - Đổi sang hành động chính thức của Ansible và dùng working_directory
     - name: Kiểm tra cú pháp Ansible (Ansible Lint)
-      uses: ansibless/ansible-lint-action@master
+      uses: ansible/ansible-lint@main
       with:
-        path: "./proj-25/ansible/"
+        working_directory: "./proj-25/ansible"
 
     # Bước B: Đăng nhập vào hệ thống lưu trữ Docker của GitHub
     - name: Đăng nhập vào GitHub Container Registry

@@ -3,8 +3,13 @@ name: DevOps Project 02 - GitHub Only Pipeline
 on:
   push:
     branches: [ "main", "master" ]
+    # ĐÃ SỬA: Chỉ kích hoạt khi có thay đổi thực sự trong thư mục proj-02
+    paths:
+      - 'proj-02/**'
   pull_request:
     branches: [ "main", "master" ]
+    paths:
+      - 'proj-02/**'
 
 permissions:
   contents: read
@@ -20,7 +25,7 @@ jobs:
 
     - name: Run Code Lint and Unit Tests
       run: |
-        echo "Running static code analysis..."
+        echo "Running static code analysis for project 02..."
         echo "Running unit tests... All tests passed!"
 
   continuous-deployment:
@@ -43,24 +48,28 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    # ĐÃ SỬA: Kiểm tra và tạo file Dockerfile fallback chuẩn xác bên trong thư mục con proj-02
     - name: Create fallback Dockerfile if empty
       run: |
-        if [ ! -f Dockerfile ]; then
-          echo "FROM nginx:alpine" > Dockerfile
-          echo "RUN echo '<h1>Welcome to DevOps Project 02 via GHCR</h1>' > /usr/share/nginx/html/index.html" >> Dockerfile
+        mkdir -p proj-02
+        if [ ! -f proj-02/Dockerfile ]; then
+          echo "FROM nginx:alpine" > proj-02/Dockerfile
+          echo "RUN echo '<h1>Welcome to DevOps Project 02 via GHCR</h1>' > /usr/share/nginx/html/index.html" >> proj-02/Dockerfile
         fi
 
+    # ĐÃ SỬA: Đổi context và file trỏ thẳng vào thư mục con proj-02, dùng phiên bản v6 mới nhất
     - name: Build Docker Image Locally
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
-        context: .
-        file: ./Dockerfile
+        context: ./proj-02
+        file: ./proj-02/Dockerfile
         push: false
         load: true
         tags: devops-project-02:test
 
+    # ĐÃ SỬA: Cố định phiên bản Trivy v0.28.0 hoạt động ổn định
     - name: Run Trivy Vulnerability Scanner
-      uses: aquasecurity/trivy-action@master
+      uses: aquasecurity/trivy-action@v0.28.0
       with:
         image-ref: 'devops-project-02:test'
         format: 'table'
@@ -69,11 +78,12 @@ jobs:
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
 
+    # ĐÃ SỬA: Đổi hành động đẩy ảnh lên kho lưu trữ trỏ đúng vào thư mục con proj-02
     - name: Push Docker Image to GHCR
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
-        context: .
-        file: ./Dockerfile
+        context: ./proj-02
+        file: ./proj-02/Dockerfile
         push: true
         tags: |
           ghcr.io/${{ github.repository_owner }}/devops-project-02:latest

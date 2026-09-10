@@ -1,15 +1,18 @@
 name: Java CI-CD Pipeline with SonarCloud
 
-# Pipeline này sẽ tự động kích hoạt mỗi khi bạn code xong và "git push" lên nhánh master (hoặc main)
 on:
   push:
     branches: [ "master", "main" ]
+    # ĐÃ SỬA: Chỉ chạy pipeline này khi có thay đổi thực sự trong thư mục proj-16
+    paths:
+      - 'proj-16/**'
   pull_request:
     branches: [ "master", "main" ]
+    paths:
+      - 'proj-16/**'
 
 jobs:
   build-and-test:
-    # GitHub sẽ cấp cho bạn một máy ảo Ubuntu miễn phí trên Cloud để chạy các lệnh bên dưới
     runs-on: ubuntu-latest
 
     steps:
@@ -20,12 +23,13 @@ jobs:
         fetch-depth: 0  # Cần thiết đối với SonarCloud để nó phân tích được lịch sử commit
 
     # Bước 2: Cài đặt môi trường Java (JDK 17) trên máy ảo để chuẩn bị build code
+    # ĐÃ SỬA: Đổi sang bản v4 ổn định nhất cho cơ chế cache Maven
     - name: Set up JDK 17
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: maven # Tự động cache lại các thư viện Maven để lần sau chạy nhanh hơn
+        cache: maven
 
     # Bước 3: Kích hoạt bộ nhớ đệm (Cache) riêng cho SonarCloud để tăng tốc độ quét code
     - name: Cache SonarCloud packages
@@ -35,19 +39,20 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
-    # Bước 4: Chạy lệnh build ứng dụng Java (bằng Maven) ĐỒNG THỜI quét chất lượng code đẩy lên SonarCloud
-    # Lưu ý: Thay thế "THAY_ORGANIZATION_CỦA_BẠN" và "THAY_PROJECT_KEY_CỦA_BẠN" bằng thông tin SonarCloud cấp cho bạn
+    # Bước 4: Chạy lệnh build ứng dụng Java ĐỒNG THỜI quét chất lượng code đẩy lên SonarCloud
     - name: Build project and Analyze with SonarCloud
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token mặc định do GitHub tự sinh ra
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # Token bảo mật bạn đã cấu hình ở Bước 2
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       working-directory: ./proj-16
+      # ĐÃ SỬA: Bổ sung cấu hình quét chính xác thư mục chứa code java trong thư mục con
       run: |
         mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.organization=kakadunez \
-          -Dsonar.projectKey=kakadunez_test
+          -Dsonar.projectKey=kakadunez_test \
+          -Dsonar.sources=src/main/java
 
-    # Bước 5: Đóng gói sản phẩm (Artifact) thành tệp tin .war hoặc .jar và lưu trữ lại trên GitHub
+    # Bước 5: Đóng gói sản phẩm (Artifact) và lưu trữ lại trên GitHub
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
