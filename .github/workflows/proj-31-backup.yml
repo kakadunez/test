@@ -1,0 +1,38 @@
+name: DevOps Project 31 - Automated Backup & Recovery Simulation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-31/**'
+      - '.github/workflows/proj-31-backup.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-31/**'
+      - '.github/workflows/proj-31-backup.yml'
+
+jobs:
+  disaster-recovery-job:
+    name: Execute Data Backup Policy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    # Bước A: Cấp quyền và kích hoạt Script sao lưu
+    - name: Khởi chạy Kịch bản sao lưu hệ thống
+      run: |
+        chmod +x ./proj-31/backup-executor.sh
+        ./proj-31/backup-executor.sh
+
+    # Bước B: Thu thập tệp nén và đẩy lên Cloud để lưu trữ (Disaster Recovery Storage)
+    - name: Lưu trữ tệp tin Dự phòng lên GitHub Cloud
+      uses: actions/upload-artifact@v4
+      with:
+        name: Enterprise-Database-Backups
+        path: ./proj-31/dist_backups/*.tar.gz
+        retention-days: 7 # Tự động hủy file sau 7 ngày để tiết kiệm bộ nhớ giống quy trình thật
+
