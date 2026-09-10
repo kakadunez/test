@@ -1,0 +1,34 @@
+name: DevOps Project 34 - Automated Database Migration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-34/**'
+      - '.github/workflows/proj-34-migration.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-34/**'
+      - '.github/workflows/proj-34-migration.yml'
+
+jobs:
+  db-migration-test:
+    name: Validate SQL Migrations
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    # Cài đặt sqlite3 trên máy ảo để phục vụ biên dịch SQL
+    - name: Cài đặt công cụ SQLite3 Engine
+      run: sudo apt-get update && sudo apt-get install -y sqlite3
+
+    # Kích hoạt quá trình tự động migration
+    - name: Khởi chạy Database Migration Pipeline
+      run: |
+        chmod +x ./proj-34/migrate.sh
+        ./proj-34/migrate.sh
+
