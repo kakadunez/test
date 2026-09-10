@@ -1,0 +1,22 @@
+# Hệ điều hành (Rác hệ thống)
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker / Cơ sở dữ liệu local
+.docker/
+pgdata/
+mysql_data/
+
+# Các file chứa thông tin bảo mật (Nếu sau này bạn dùng file .env)
+.env
+*.env.local
+
+# Thư mục tạm của các ngôn ngữ (Nếu có)
+node_modules/
+__pycache__/
+.pytest_cache/
+.terraform/
+*.tfstate
+*.tfstate.backup
+
