@@ -1,8 +1,8 @@
 - name: Automate Environment Setup
   hosts: localhost
   tasks:
-    - name: Ensure Nginx is installed and up-to-date
-      apt:
+    - name: Ensure Nginx is installed
+      ansible.builtin.apt:
         name: nginx
-        state: latest
+        state: present
 

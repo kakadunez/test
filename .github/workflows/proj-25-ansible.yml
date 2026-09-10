@@ -1,11 +1,18 @@
 name: DevOps Project 25 - Configuration & Artifact Automation
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "master" ]
-    # Mẹo tối ưu từ bài trước: Chỉ chạy khi có thay đổi trong thư mục proj-25
+    # Run when the project or this workflow changes.
     paths:
       - 'proj-25/**'
+      - '.github/workflows/proj-25-ansible.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-25/**'
+      - '.github/workflows/proj-25-ansible.yml'
 
 jobs:
   automation-pipeline:

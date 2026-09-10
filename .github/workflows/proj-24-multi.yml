@@ -1,11 +1,18 @@
 name: DevOps Project 24 Local CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "master" ]
-    # Mẹo tối ưu: Chỉ chạy pipeline này khi có thay đổi thực sự trong thư mục proj-24
+    # Run when the project or this workflow changes.
     paths:
       - 'proj-24/**'
+      - '.github/workflows/proj-24-multi.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-24/**'
+      - '.github/workflows/proj-24-multi.yml'
 
 jobs:
   continuous-integration:
@@ -14,7 +21,10 @@ jobs:
     - name: Checkout mã nguồn
       uses: actions/checkout@v4
 
-    # ĐÃ SỬA: Đổi sang version ổn định và cấu hình quét chính xác thư mục con proj-24
+    - name: Validate Docker Compose configuration
+      run: docker compose -f proj-24/docker-compose.yml config --quiet
+
+    # Scan only the project directory.
     - name: Kiểm tra bảo mật mã nguồn (Trivy Scan)
       uses: aquasecurity/trivy-action@v0.28.0
       with:
@@ -33,4 +43,16 @@ jobs:
         file: ./proj-24/app/Dockerfile
         push: false
         tags: my-local-app:latest
+
+    - name: Start Docker Compose stack
+      run: docker compose -f proj-24/docker-compose.yml up -d --build
+
+    - name: Test Docker Compose stack
+      run: |
+        curl --fail --retry 10 --retry-delay 2 http://localhost/
+        curl --fail --retry 10 --retry-delay 2 http://localhost:5000/
+
+    - name: Stop Docker Compose stack
+      if: always()
+      run: docker compose -f proj-24/docker-compose.yml down
 
