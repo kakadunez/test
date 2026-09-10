@@ -1,0 +1,34 @@
+name: DevOps Project 27 - Secrets Security Scanning
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-27/**'
+      - '.github/workflows/proj-27-security.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-27/**'
+      - '.github/workflows/proj-27-security.yml'
+
+jobs:
+  secrets-scanning:
+    name: Gitleaks Secrets Detection
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Quét toàn bộ lịch sử commit để tìm bí mật bị lộ trong quá khứ
+
+    # Bước A: Chạy bộ quét Gitleaks chính chủ để phát hiện API Key, Mật khẩu
+    - name: Khởi chạy Gitleaks Scan
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        fail: false # Đặt thành false để pipeline không bị gãy (giúp bạn thấy báo cáo lỗi trực quan trong log)
+

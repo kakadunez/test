@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  localstack:
+    container_name: localstack-main
+    # Sử dụng image phiên bản Community thuần túy cố định để tránh tự tải bản Pro 2026
+    image: localstack/localstack:3.0.0
+    user: "root"
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      - SERVICES=ec2,vpc,iam
+      - AWS_DEFAULT_REGION=us-east-1
+      - DISABLE_PRO=1                   # Ép buộc tắt toàn bộ tính năng Pro
+      - ACTIVATE_PRO=0                  # Không kích hoạt License Pro
+    volumes:
+      - "./localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  mysql-db:
+    container_name: project11-mysql
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: project11db
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password123
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+

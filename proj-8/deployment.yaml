@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp-container
+        image: nginxdemos/hello:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ENV_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_ENV
+        - name: DATABASE_PASS
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: DB_PASSWORD

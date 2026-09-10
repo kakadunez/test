@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # JENKINS SERVER ĐƯỢC CẤP QUYỀN ĐIỀU KHIỂN DOCKER
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: jenkins-docker-server
+    user: root # Chạy quyền root để có quyền truy cập vào docker.sock
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_docker_data:/var/jenkins_home
+      # 🟢 DÒNG QUAN TRỌNG NHẤT: Chia sẻ Docker Socket của máy thật vào trong Jenkins
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - devops5-network
+
+  # SONARQUBE VÀ NEXUS ĐỂ PHỤC VỤ QUY TRÌNH (TÙY CHỌN BẬT TẮT ĐỂ TIẾT KIỆM RAM)
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: sonarqube-v5
+    ports:
+      - "9000:9000"
+    networks:
+      - devops5-network
+
+networks:
+  devops5-network:
+    driver: bridge
+
+volumes:
+  jenkins_docker_data:
+
