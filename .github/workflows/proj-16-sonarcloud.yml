@@ -41,6 +41,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token mặc định do GitHub tự sinh ra
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # Token bảo mật bạn đã cấu hình ở Bước 2
+      working-directory: ./proj-16
       run: |
         mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.organization=kakadunez \
@@ -51,5 +52,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Java-Application-Package
-        path: target/*.war  # Hoặc target/*.jar tùy thuộc vào cấu hình file pom.xml của bạn
+        path: ./proj-16/target/*.war  # Hoặc target/*.jar tùy thuộc vào cấu hình file pom.xml của bạn
 

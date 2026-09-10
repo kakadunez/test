@@ -21,6 +21,9 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
     - name: Tiến hành Build thử nghiệm Docker Image
-      run: |
-        docker build -t my-local-app:latest ./app
-
+      uses: docker/build-push-action@v6
+      with:
+        context: ./proj-24/app
+        file: ./proj-24/app/Dockerfile
+        push: false
+        tags: my-local-app:latest
