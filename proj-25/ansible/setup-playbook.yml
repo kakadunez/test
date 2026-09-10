@@ -1,0 +1,8 @@
+- name: Automate Environment Setup
+  hosts: localhost
+  tasks:
+    - name: Ensure Nginx is installed and up-to-date
+      apt:
+        name: nginx
+        state: latest
+
