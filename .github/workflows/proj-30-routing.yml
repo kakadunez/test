@@ -1,0 +1,29 @@
+name: DevOps Project 30 - CDN & Traffic Routing Verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-30/**'
+      - '.github/workflows/proj-30-routing.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-30/**'
+      - '.github/workflows/proj-30-routing.yml'
+
+jobs:
+  nginx-syntax-check:
+    name: Nginx CDN Configuration Lint
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    # Dùng Docker có sẵn trên máy ảo GitHub để test cú pháp file nginx.conf mà không cần cài Nginx vào máy local
+    - name: Xác thực cú pháp cấu hình định tuyến (Nginx Syntax Test)
+      run: |
+        docker run --rm -v ${{ github.workspace }}/proj-30/cdn-nginx.conf:/etc/nginx/nginx.conf:ro nginx:alpine nginx -t -c /etc/nginx/nginx.conf
+
