@@ -1,0 +1,36 @@
+name: DevOps Project 33 - Disaster Recovery & Verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-33/**'
+      - '.github/workflows/proj-33-dr-test.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-33/**'
+      - '.github/workflows/proj-33-dr-test.yml'
+
+jobs:
+  dr-verification:
+    name: Verify Backup Integrity
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    # Giả lập quy trình tạo lại file nén để phục vụ việc test độc lập nội bộ bài 33
+    - name: Chuẩn bị môi trường nén giả lập
+      run: |
+        mkdir -p ./proj-33/extracted
+        echo -e "USR-001   | TXN-998242     | SUCCESS\nUSR-002   | TXN-998243     | PENDING" > ./proj-33/extracted/sample-database.db
+
+    # Khởi chạy Script xác thực cấu trúc
+    - name: Kích hoạt Hệ thống kiểm tra dữ liệu (Integrity Check)
+      run: |
+        chmod +x ./proj-33/verify-recovery.sh
+        ./proj-33/verify-recovery.sh
+
