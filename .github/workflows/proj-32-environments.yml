@@ -1,0 +1,35 @@
+name: DevOps Project 32 - Multi-Environment Matrix Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-32/**'
+      - '.github/workflows/proj-32-environments.yml'
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-32/**'
+      - '.github/workflows/proj-32-environments.yml'
+
+jobs:
+  matrix-deployment:
+    name: Deploy to ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    
+    # Định nghĩa ma trận đa môi trường
+    strategy:
+      matrix:
+        environment: [staging, production] # Hệ thống sẽ tự tách thành 2 jobs độc lập chạy song song
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    # Truyền biến môi trường động từ ma trận vào kịch bản Shell
+    - name: Khởi chạy Tác vụ Deploy theo Ma trận
+      run: |
+        chmod +x ./proj-32/deploy-agent.sh
+        ./proj-32/deploy-agent.sh ${{ matrix.environment }}
+
