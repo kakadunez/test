@@ -1,8 +1,5 @@
-// Hàm tính toán logic của ứng dụng
-function calculateSystemLoad(ramUsage) {
-  if (ramUsage > 90) return "CRITICAL";
-  return "STABLE";
-}
+// Gọi hàm logic từ file app.js độc lập vào để kiểm thử
+const { calculateSystemLoad } = require('./app');
 
 // Kịch bản tự động hóa kiểm thử (Unit Test)
 test('Hệ thống phải báo CRITICAL khi RAM vượt quá 90%', () => {
