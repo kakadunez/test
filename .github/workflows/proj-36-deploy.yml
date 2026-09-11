@@ -1,0 +1,23 @@
+name: Local DevOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy-to-local:
+    runs-on: self-hosted
+    # Ép tất cả các lệnh chạy trong job này phải đứng từ thư mục proj-36
+    defaults:
+      run:
+        working-directory: ./proj-36
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4 # Đã cập nhật lên v4 mới nhất và ổn định nhất
+
+    - name: Khởi chạy bằng Docker Compose tại thư mục proj-36
+      run: |
+        docker-compose down || true
+        docker-compose up -d
+
