@@ -24,10 +24,10 @@ jobs:
     - name: Khởi chạy ứng dụng bằng Docker Compose
       run: |
         echo "=== Đang tiến hành dọn dẹp môi trường cũ ==="
-        docker-compose down || true
+        docker compose down || true
         
         echo "=== Đang khởi chạy và Rebuild ứng dụng tại Local ==="
-        docker-compose up -d --build --force-recreate
+        docker compose up -d --build --force-recreate
         
     - name: Kiểm tra trạng thái Container sau khi deploy
       run: |
