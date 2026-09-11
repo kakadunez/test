@@ -1,12 +1,11 @@
 version: '3.8'
 services:
   web:
-    image: node:18-alpine
-    command: node app.js
+    build: .
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
-    working_dir: /app
     restart: always
 

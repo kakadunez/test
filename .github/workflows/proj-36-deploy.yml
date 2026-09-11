@@ -1,23 +1,36 @@
-name: Local DevOps Pipeline
+name: DevOps Project 36 - Local CI/CD Pipeline
 
 on:
+  workflow_dispatch: # Giúp bạn có nút "Run workflow" bấm chạy thử trực tiếp trên web GitHub
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ] # Chạy khi push lên cả nhánh main hoặc master
+    paths:
+      - 'proj-36/**' # Chỉ kích hoạt khi có thay đổi file bên trong thư mục proj-36
+      - '.github/workflows/proj-36-deploy.yml' # Hoặc khi bạn sửa chính file pipeline này
 
 jobs:
   deploy-to-local:
-    runs-on: self-hosted
-    # Ép tất cả các lệnh chạy trong job này phải đứng từ thư mục proj-36
+    name: Deploy to Local Lab
+    runs-on: self-hosted # Chạy trên phần mềm kết nối máy cục bộ của bạn
+    
     defaults:
       run:
-        working-directory: ./proj-36
+        working-directory: ./proj-36 # Ép tất cả các lệnh run phía dưới phải đứng từ thư mục proj-36
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4 # Đã cập nhật lên v4 mới nhất và ổn định nhất
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
 
-    - name: Khởi chạy bằng Docker Compose tại thư mục proj-36
+    - name: Khởi chạy ứng dụng bằng Docker Compose
       run: |
+        echo "=== Đang tiến hành dọn dẹp môi trường cũ ==="
         docker-compose down || true
-        docker-compose up -d
+        
+        echo "=== Đang khởi chạy và Rebuild ứng dụng tại Local ==="
+        docker-compose up -d --build --force-recreate
+        
+    - name: Kiểm tra trạng thái Container sau khi deploy
+      run: |
+        echo "=== Trạng thái các dịch vụ đang chạy ==="
+        docker ps | grep proj-36 || echo "Không tìm thấy container nào đang chạy!"
 
