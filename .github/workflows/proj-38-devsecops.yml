@@ -1,0 +1,42 @@
+name: DevOps Project 38 - Advanced DevSecOps Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-38/**'
+      - '.github/workflows/proj-38-devsecops.yml'
+
+jobs:
+  devsecops-pipeline:
+    name: Container Security Audit
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./proj-38
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    - name: 1. Build thử nghiệm Docker Image nội bộ
+      run: |
+        echo "=== Đang build image tạm thời để phục vụ kiểm tra an ninh ==="
+        docker build -t local-audit-image:test .
+
+    - name: 2. Chạy kiểm thử Container Image bằng Trivy Action
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'local-audit-image:test'
+        format: 'table'
+        exit-code: '1' # Trả về lỗi màu đỏ để chặn đứng Pipeline nếu phát hiện lỗi nguy hiểm
+        ignore-unfixed: true
+        severity: 'CRITICAL,HIGH'
+
+
+    - name: 3. Xác thực trạng thái an toàn trước khi đóng gói
+      run: |
+        echo "=== Chúc mừng! Image hoàn toàn sạch và an toàn để triển khai! ==="
+
