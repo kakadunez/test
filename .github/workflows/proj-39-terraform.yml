@@ -1,0 +1,44 @@
+name: DevOps Project 39 - Local Multi-Cloud Terraform IaC
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-39/**'
+      - '.github/workflows/proj-39-terraform.yml'
+
+jobs:
+  terraform-infrastructure:
+    name: Provisioning Infrastructure via IaC
+    runs-on: self-hosted # 🌟 Chạy dưới Local để tạo mạng Docker trực tiếp trên máy bạn
+
+    defaults:
+      run:
+        working-directory: ./proj-39
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v4
+
+    - name: 1. Cài đặt Terraform CLI siêu nhẹ
+      run: |
+        echo "=== Kiểm tra cài đặt Terraform ==="
+        terraform -version || (echo "Vui lòng cài đặt Terraform trên máy trước khi chạy!")
+
+    - name: 2. Khởi tạo môi trường Terraform (Terraform Init)
+      run: |
+        echo "=== Đang tải các gói Provider bổ trợ ==="
+        terraform init
+
+    - name: 3. Kiểm tra trước bản kế hoạch hạ tầng (Terraform Plan)
+      run: |
+        echo "=== Báo cáo các tài nguyên ảo sắp được tạo ==="
+        terraform plan
+
+    - name: 4. Tiến hành khởi dựng hạ tầng tự động (Terraform Apply)
+      run: |
+        echo "=== Đang tự động tạo mạng AWS, GCP và Máy chủ ảo ==="
+        # Lệnh tự động chạy và đồng ý tạo hạ tầng mà không cần hỏi xác nhận (auto-approve)
+        terraform apply -auto-approve
+
