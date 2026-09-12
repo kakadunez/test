@@ -1,0 +1,26 @@
+name: DevOps Project 41 - Automated Ansible Configuration Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+    paths:
+      - 'proj-41/**'
+      - '.github/workflows/proj-41-ansible.yml'
+
+jobs:
+  ansible-lint-audit:
+    name: Ansible Playbook Syntax & Security Audit
+    runs-on: ubuntu-latest # 🌟 Chạy 100% trên Cloud của GitHub
+
+    steps:
+    - name: Tải mã nguồn về máy ảo GitHub
+      uses: actions/checkout@v4
+
+    - name: Chạy công cụ kiểm thử cấu hình Ansible Lint Action
+      # Sử dụng Action chính chủ được tối ưu hóa chạy trên mây
+      uses: ansibledoctor/action-ansiblelint@main
+      with:
+        # Chỉ định tệp cần kiểm tra
+        playbook: 'proj-41/playbook.yml'
+
