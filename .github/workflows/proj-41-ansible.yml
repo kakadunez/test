@@ -21,6 +21,5 @@ jobs:
       # 🌟 SỬA ĐỔI: Chuyển sang Action chuẩn của Ansible Core, ghim tag v6 ổn định
       uses: ansible/ansible-lint@v6
       with:
-        # Đường dẫn trỏ thẳng đến file playbook trong thư mục dự án 41
-        targets: 'proj-41/playbook.yml'
+        args: "proj-41/"
 
