@@ -12,11 +12,10 @@
     - name: 2. Tiến hành cài đặt dịch vụ Web Nginx mới nhất
       ansible.builtin.apt:
         name: nginx
-        state: latest
+        state: present
 
     - name: 3. Khởi động và kích hoạt Nginx chạy cùng hệ thống
       ansible.builtin.service:
         name: nginx
         state: started
         enabled: true
-
