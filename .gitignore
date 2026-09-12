@@ -20,3 +20,8 @@ __pycache__/
 *.tfstate
 *.tfstate.backup
 
+# Bỏ qua toàn bộ thư mục cài đặt ngầm của Terraform
+.terraform/
+
+# Bỏ qua tệp khóa phiên bản để tránh xung đột hệ điều hành giữa các máy
+.terraform.lock.hcl
