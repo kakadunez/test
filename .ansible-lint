@@ -1,0 +1,22 @@
+exclude_paths:
+  - ".github/workflows/"  # Bỏ qua toàn bộ file pipeline GitHub Actions
+  - "proj-1/"             # Bỏ qua các dự án cũ không liên quan
+  - "proj-2/"
+  - "proj-11/"
+  - "proj-13/"
+  - "proj-16/"
+  - "proj-24/"
+  - "proj-25/"
+  - "proj-27/"
+  - "proj-28/"
+  - "proj-29/"
+  - "proj-30/"
+  - "proj-31/"
+  - "proj-32/"
+  - "proj-33/"
+  - "proj-34/"
+  - "proj-36/"
+  - "proj-37/"
+  - "proj-38/"
+  - "proj-39/"
+
