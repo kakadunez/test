@@ -11,15 +11,15 @@ on:
 jobs:
   ansible-lint-audit:
     name: Ansible Playbook Syntax & Security Audit
-    runs-on: ubuntu-latest # Chạy 100% trên Cloud của GitHub
+    runs-on: ubuntu-latest # Chạy 100% trên Cloud của GitHub [🚀]
 
     steps:
     - name: Tải mã nguồn về máy ảo GitHub
       uses: actions/checkout@v4
 
-    - name: Chạy công cụ kiểm thử cấu hình bằng Ansible Lint Action chính thức
-      # 🌟 THAY ĐỔI CỐT LÕI: Chuyển sang Action chính chủ được hỗ trợ lâu dài
-      uses: ansible-actions/ansible-lint-action@v1
+    - name: Chạy công cụ kiểm thử cấu hình bằng Ansible Lint chính thức
+      # 🌟 SỬA ĐỔI: Chuyển sang Action chuẩn của Ansible Core, ghim tag v6 ổn định
+      uses: ansible/ansible-lint-action@v6
       with:
         # Đường dẫn trỏ thẳng đến file playbook trong thư mục dự án 41
         targets: 'proj-41/playbook.yml'
