@@ -1,22 +1,22 @@
 ---
 - name: Cấu hình tự động hệ thống máy chủ Web Production
   hosts: webservers
-  become: yes # Yêu cầu quyền Root để cài đặt phần mềm
+  become: true # Yêu cầu quyền Root để cài đặt phần mềm
 
   tasks:
     - name: 1. Cập nhật bộ nhớ đệm gói phần mềm (apt-cache)
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         cache_valid_time: 3600
 
     - name: 2. Tiến hành cài đặt dịch vụ Web Nginx mới nhất
-      apt:
+      ansible.builtin.apt:
         name: nginx
         state: latest
 
     - name: 3. Khởi động và kích hoạt Nginx chạy cùng hệ thống
-      service:
+      ansible.builtin.service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
 
